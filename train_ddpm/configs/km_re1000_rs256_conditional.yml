@@ -1,7 +1,11 @@
 data:
     dataset: "kolmogorov flow"
     data_dir: "./data/kf_2d_re1000_256_40seed.npy"
+    data_dir_u: "./data/kf_2d_re1000_256_40seed_u.npy"
+    data_dir_v: "./data/kf_2d_re1000_256_40seed_v.npy"
     stat_path: "./km256_stats.npz"
+    stat_path_u: "./km256_u_stats.npz"
+    stat_path_v: "./km256_v_stats.npz"
     image_size: 256
     channels: 3
     logit_transform: false
@@ -26,17 +30,22 @@ model:
     resamp_with_conv: True
 
 diffusion:
-    beta_schedule: linear
+    beta_schedule: linear # quad, linear, const, jsd, sigmoid
     beta_start: 0.0001
     beta_end: 0.02
     num_diffusion_timesteps: 1000 # Might need to be changed to 500 later to match SDEdit
 
 training:
-    batch_size: 32
+    batch_size: 8 # 32
     n_epochs: 300 # 300 epoch for about 12 hours
     n_iters: 200000
-    snapshot_freq: 20000
+    snapshot_freq: 5000 # 20000
     validation_freq: 2000
+    dx: 18.666666666666668
+    dy: 20.0
+    dt: 0.5
+    Re: 1000
+    w_base: 0.8 # w_pde = 1 - w_base
 
 sampling:
     batch_size: 32
