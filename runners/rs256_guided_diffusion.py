@@ -7,10 +7,8 @@ import torchvision.utils as tvu
 import torch.nn.functional as F
 import torchvision.transforms as transforms
 
-from models.diffusion_new import ConditionalModel as CModel
-from models.diffusion_new import Model
-from functions.process_data import *
-from functions.denoising_step import guided_ddpm_steps, guided_ddim_steps, ddpm_steps, ddim_steps
+from train_ddpm.models.diffusion import ConditionalModel as CModel
+from functions.denoising_step import guided_ddim_steps, ddim_steps
 
 import matplotlib.pyplot as plt
 from einops import rearrange
@@ -71,6 +69,9 @@ def load_flow_data(path, stat_path=None):
 
 def load_recons_data(ref_path, sample_path, data_kw, smoothing, smoothing_scale):
     with np.load(sample_path, allow_pickle=True) as f:
+        if f.shape == 4:
+            sampled_data = f[-4:, ...].copy().astype(np.float32)
+            
         sampled_data = f[data_kw][-4:, ...].copy().astype(np.float32)
         # idx_lst = f[idx_kw][-4:]
     sampled_data = torch.as_tensor(sampled_data, dtype=torch.float32)
@@ -294,7 +295,7 @@ class Diffusion(object):
             model = CModel(self.config)
         else:
             print('Using unconditional model')
-            model = Model(self.config)
+            raise Exception("There is no Unconditional Model")
 
         model.load_state_dict(torch.load(self.config.model.ckpt_path)[-1])
 
